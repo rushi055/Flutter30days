@@ -44,6 +44,8 @@ class _LoginPageState extends State<LoginPage> {
                         hintText: "Enter username",
                         labelText: "Username",
                       ),
+
+                      //jese jese name type hoga vese name dekta jayega WELCOME ke paas
                       onChanged: (value) {
                         name = value;
                         setState(() {});
@@ -61,18 +63,22 @@ class _LoginPageState extends State<LoginPage> {
                     ),
 
                     InkWell(
+
+                      // Hame jab AWAIT use karna hai tab hame ASYNC use karna hota hai
                       onTap: () async {
                         setState(() {
-                          changeButton = true;
+                          changeButton = true; //changeButton eke variable hai
                         });
                         await Future.delayed(Duration(seconds: 1));
                         Navigator.pushNamed(context, MyRoutes.homeRoute);
                       },
                       child: AnimatedContainer(
                         duration: Duration(seconds: 1),
-                        width: changeButton ? 50 : 150,
+                        width: changeButton ? 50 : 150, //If changeButton = true then width=50 else width=150
                         height: 50,
                         alignment: Alignment.center,
+
+                        //here also conditional statement
                         child: changeButton
                             ? Icon(
                           Icons.done,
