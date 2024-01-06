@@ -10,107 +10,134 @@ class _LoginPageState extends State<LoginPage> {
   String name = "";
   bool changeButton = false;
 
+  //The line `final _formKey = GlobalKey<FormState>();` creates a unique identifier (`_formKey`) for a form in Flutter.
+  // This identifier helps manage the form's state, including tasks like validation and field control,
+  // across different parts of the app.
+  final _formKey = GlobalKey<FormState>();
+
+  //ye use kiya hai ta ke surtain code baar baar likna na pade
+  // baaas eke function or a method that is called when the login button
+  // (or whatever action triggers the login process) is tapped
+  moveToHome(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        changeButton = true;
+      });
+      await Future.delayed(Duration(seconds: 1));
+      await Navigator.pushNamed(context, MyRoutes.homeRoute);
+      setState(() {
+        changeButton = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
         color: Colors.white,
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Image.asset(
-                "assets/Images/login_image.png",
-                fit: BoxFit.cover,
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Text(
-                "Welcome $name",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Image.asset(
+                  "assets/Images/welcome.png",
+                  fit: BoxFit.cover,
                 ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 32.0),
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(
-                        hintText: "Enter username",
-                        labelText: "Username",
+                SizedBox(
+                  height: 20.0,
+                ),
+                Text(
+                  "Welcome $name",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 32.0),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: "Enter username",
+                          labelText: "Username",
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Username cannot be empty";
+                          }
+
+                          return null;
+                        },
+                        onChanged: (value) {
+                          name = value;
+                          setState(() {});
+                        },
+                      ),
+                      TextFormField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: "Enter password",
+                          labelText: "Password",
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Password cannot be empty";
+                          } else if (value.length < 6) {
+                            return "Password length should be atleast 6";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 40.0,
                       ),
 
-                      //jese jese name type hoga vese name dekta jayega WELCOME ke paas
-                      onChanged: (value) {
-                        name = value;
-                        setState(() {});
-                      },
-                    ),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: "Enter password",
-                        labelText: "Password",
-                      ),
-                    ),
-                    SizedBox(
-                      height: 40.0,
-                    ),
+                      //InkWell Must have an ancestor Material widget in which to cause ink reactions.
+                      Material(
+                        color: Colors.deepPurple,
+                        borderRadius:
+                        BorderRadius.circular(changeButton ? 50 : 8),
+                        child: InkWell(
 
-                    InkWell(
+                          //Login button ko click hone ke baad check karega agar validation true hai tho next page pe jayega nahi tho null return karega matlab button function nahi karega
 
-                      // Hame jab AWAIT use karna hai tab hame ASYNC use karna hota hai
-                      onTap: () async {
-                        setState(() {
-                          changeButton = true; //changeButton eke variable hai
-                        });
-                        await Future.delayed(Duration(seconds: 1));
-                        Navigator.pushNamed(context, MyRoutes.homeRoute);
-                      },
-                      child: AnimatedContainer(
-                        duration: Duration(seconds: 1),
-                        width: changeButton ? 50 : 150, //If changeButton = true then width=50 else width=150
-                        height: 50,
-                        alignment: Alignment.center,
+                          onTap: () => moveToHome(context),
+                          child: AnimatedContainer(
+                            duration: Duration(seconds: 1),
 
-                        //here also conditional statement
-                        child: changeButton
-                            ? Icon(
-                          Icons.done,
-                          color: Colors.white,
-                        )
-                            : Text(
-                          "Login",
-                          style: TextStyle(
+                            //animation ke liye
+                            width: changeButton ? 50 : 150,
+                            height: 50,
+                            alignment: Alignment.center,
+                            child: changeButton
+                                ? Icon(
+                              Icons.done,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius:
-                          BorderRadius.circular(changeButton ? 50 : 8),
+                            )
+                                : Text(
+                              "Login",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-
-                    // ElevatedButton(
-                    //   child: Text("Login"),
-                    //   style: TextButton.styleFrom(minimumSize: Size(150, 40)),
-                    //   onPressed: () {
-                    //     Navigator.pushNamed(context, MyRoutes.homeRoute);
-                    //   },
-                    // )
-                  ],
-                ),
-              )
-            ],
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
-        ));
+        )
+    );
   }
 }
